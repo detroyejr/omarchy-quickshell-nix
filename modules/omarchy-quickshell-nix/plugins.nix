@@ -15,6 +15,13 @@ args@{
   ...
 }:
 
+let
+  manifestPath = "${src}/manifest.json";
+  manifest =
+    if builtins.pathExists manifestPath then builtins.fromJSON (builtins.readFile manifestPath) else { };
+  pluginId =
+    if args ? id then args.id else if manifest ? id then manifest.id else pname;
+in
 stdenv.mkDerivation {
   inherit
     pname
@@ -47,8 +54,10 @@ stdenv.mkDerivation {
   '';
 
   passthru = passthru // {
+    id = pluginId;
     omarchyPlugin = (passthru.omarchyPlugin or { }) // {
       name = pname;
+      id = pluginId;
       inherit runtimeInputs;
     };
   };

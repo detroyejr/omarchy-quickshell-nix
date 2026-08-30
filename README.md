@@ -12,12 +12,12 @@ Quick NixOS example:
 ```nix
 { lib, pkgs, ... }:
 {
-  imports = [ /path/to/omarchy-quickshell-nix ];
+  imports = [ ({builtins.fetchGit { url = "https://github.com/detroyejr/omarchy-quickshell-nix"; }) ];
 
   programs.omarchy-quickshell = {
     enable = true;
-    plugins = with pkgs.omarchyPlugins; [ omarchy-pihole ];
-    settings.bar.layout.right = lib.mkBefore [ { id = "io.github.detroyejr.omarchy-pihole"; } ];
+    plugins = [ pkgs.omarchyPlugins."omarchy-pihole" ];
+    settings.bar.layout.right = lib.mkBefore [ { id = pkgs.omarchyPlugins."omarchy-pihole".id; } ];
   };
 }
 ```
@@ -31,8 +31,8 @@ Flake NixOS example:
 
   programs.omarchy-quickshell = {
     enable = true;
-    plugins = with pkgs.omarchyPlugins; [ omarchy-pihole ];
-    settings.bar.layout.right = lib.mkBefore [ { id = "io.github.detroyejr.omarchy-pihole"; } ];
+    plugins = [ pkgs.omarchyPlugins."omarchy-pihole" ];
+    settings.bar.layout.right = lib.mkBefore [ { id = pkgs.omarchyPlugins."omarchy-pihole".id; } ];
   };
 }
 ```

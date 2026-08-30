@@ -139,8 +139,8 @@ stdenv.mkDerivation (attrs: {
     ''}
 
     ${lib.concatMapStringsSep "\n" (plugin: ''
-      install -d "$out/share/omarchy/shell/plugins/${plugin.name}"
-      cp -r "${plugin}"/. "$out/share/omarchy/shell/plugins/${plugin.name}"
+      install -d "$out/share/omarchy/shell/plugins/${plugin.omarchyPlugin.name}"
+      cp -r "${plugin}"/. "$out/share/omarchy/shell/plugins/${plugin.omarchyPlugin.name}"
     '') extraPlugins}
 
     ${webAppsInstallPhase}
