@@ -17,6 +17,7 @@
   gsettings-desktop-schemas,
   glib,
   xdg-utils,
+  ttfx,
   writeText,
   enableMenu ? false,
   enableBackground ? false,
@@ -58,6 +59,7 @@ stdenv.mkDerivation (attrs: {
     jq
     libxkbcommon
     socat
+    ttfx
     xdg-terminal-exec
     xdg-utils
     chromium
@@ -89,13 +91,44 @@ stdenv.mkDerivation (attrs: {
       "#!/usr/bin/python3" \
       "#!${lib.getBin python3}/bin/python3"
 
+    substituteInPlace "bin/omarchy-screensaver" \
+      --replace-fail \
+      '  ttfx -i ~/.config/omarchy/branding/screensaver.txt \' \
+      '  screensaver_asset="$HOME/.config/omarchy/branding/screensaver.txt"
+  [[ -f "$screensaver_asset" ]] || screensaver_asset="$OMARCHY_PATH/logo.txt"
+  ttfx -i "$screensaver_asset" \'
+
+    substituteInPlace "bin/omarchy-branding-screensaver" \
+      --replace-fail \
+      'set -euo pipefail' \
+      'set -euo pipefail
+
+branding_dir="$HOME/.config/omarchy/branding"
+screensaver_asset="$branding_dir/screensaver.txt"
+
+mkdir -p "$branding_dir"'
+
+    substituteInPlace "bin/omarchy-branding-screensaver" \
+      --replace-fail \
+      '~/.config/omarchy/branding/screensaver.txt' \
+      '"$screensaver_asset"'
+
 
     substituteInPlace \
       "bin/omarchy-launch-terminal" \
       "bin/omarchy-launch-tui" \
-      "bin/omarchy-launch-screensaver" \
       "bin/omarchy-launch-floating-terminal-with-presentation" \
       "bin/omarchy-remove-launcher-entry" \
+      --replace-fail \
+      "xdg-terminal-exec" \
+      "${lib.getBin xdg-terminal-exec}/bin/xdg-terminal-exec"
+
+    substituteInPlace "bin/omarchy-launch-screensaver" \
+      --replace-fail \
+      'exec {events}< <(socat -U - "UNIX-CONNECT:$SOCKET")' \
+      'exec {events}< <(socat -U - "UNIX-CONNECT:$SOCKET" 2>/dev/null)'
+
+    substituteInPlace "bin/omarchy-launch-screensaver" \
       --replace-fail \
       "xdg-terminal-exec" \
       "${lib.getBin xdg-terminal-exec}/bin/xdg-terminal-exec"

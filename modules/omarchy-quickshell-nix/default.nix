@@ -242,11 +242,13 @@ in
   config = {
     nixpkgs.overlays = [
       (final: _prev: {
+        aether = final.callPackage ./aether.nix { };
         omarchy-quickshell = final.callPackage ./omarchy.nix { };
         omarchyPlugins = import ../../pkgs {
           inherit (final) lib;
           pkgs = final;
         };
+        ttfx = final.callPackage ./ttfx.nix { };
       })
     ];
     programs.omarchy-quickshell.finalPackage = finalPackage;
@@ -254,9 +256,11 @@ in
     programs.chromium.enable = true;
 
     environment.systemPackages = [
+      pkgs.aether
       cfg.finalPackage
       pkgs.quickshell
       pkgs.chromium
+      pkgs.ttfx
     ];
 
     fonts = {

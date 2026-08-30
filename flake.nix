@@ -24,17 +24,21 @@
             inherit system;
             overlays = [
               (final: _prev: {
+                aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
                 omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix { };
                 omarchyPlugins = import ./pkgs {
                   inherit (final) lib;
                   pkgs = final;
                 };
+                ttfx = final.callPackage ./modules/omarchy-quickshell-nix/ttfx.nix { };
               })
             ];
           };
           omarchy-quickshell = pkgs.omarchy-quickshell;
         in
         {
+          inherit (pkgs) aether;
+          inherit (pkgs) ttfx;
           inherit omarchy-quickshell;
           default = omarchy-quickshell;
         }
@@ -50,11 +54,13 @@
 
       overlays.default = (
         final: _prev: {
+          aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
           omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix { };
           omarchyPlugins = import ./pkgs {
             inherit (final) lib;
             pkgs = final;
           };
+          ttfx = final.callPackage ./modules/omarchy-quickshell-nix/ttfx.nix { };
         }
       );
 
@@ -65,11 +71,13 @@
             inherit system;
             overlays = [
               (final: _prev: {
+                aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
                 omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix { };
                 omarchyPlugins = import ./pkgs {
                   inherit (final) lib;
                   pkgs = final;
                 };
+                ttfx = final.callPackage ./modules/omarchy-quickshell-nix/ttfx.nix { };
               })
             ];
           };
