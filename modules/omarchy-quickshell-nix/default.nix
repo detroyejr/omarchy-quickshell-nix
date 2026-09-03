@@ -265,7 +265,10 @@ in
 
     fonts = {
       enableDefaultPackages = true;
-      packages = lib.mkBefore [ pkgs.nerd-fonts.iosevka finalPackage ];
+      packages = lib.mkBefore [
+        pkgs.nerd-fonts.iosevka
+        finalPackage
+      ];
 
       fontDir.enable = true;
       fontconfig = {
@@ -295,10 +298,13 @@ in
       account    include                     system-local-login
     '';
 
-    security.pam.services.omarchy-lock-fingerprint.text = lib.mkIf config.services.fprintd.enable ''
-      #%PAM-1.0
-      auth       required                    pam_fprintd.so
-      account    include                     system-local-login
-    '';
+    security.pam.services.omarchy-lock-fingerprint = lib.mkIf config.services.fprintd.enable {
+      fprintAuth = true;
+      text = lib.mkIf config.services.fprintd.enable ''
+        #%PAM-1.0
+        auth       required                    ${pkgs.fprintd}/lib/security/pam_fprintd.so
+        account    include                     system-local-login
+      '';
+    };
   };
 }
