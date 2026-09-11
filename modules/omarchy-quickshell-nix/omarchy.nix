@@ -26,13 +26,13 @@
 }:
 
 let
-  version = "unstable-0ae1694";
+  version = "4.0.3";
 
   src = fetchFromGitHub {
-    owner = "basecamp";
+    owner = "omacom";
     repo = "omarchy";
-    rev = "0ae1694830b6bd9511042fe1b89a0062d8c083cb";
-    hash = "sha256-yEgF68XAH98choh7B5hXrsMz3A1xW1iPWS95noV61S0=";
+    rev = "0534987009061cbe2dacdde4ad564092ab698d12";
+    hash = "sha256-+LF1Etj6akqmam9stdTeJJNBfoxAL+ZYyWvqo9R2P2E=";
   };
 
   shellConfigFile = writeText "shell.json" "${shellConfig}\n";
