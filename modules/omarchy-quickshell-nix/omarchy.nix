@@ -71,7 +71,22 @@ stdenv.mkDerivation (attrs: {
     mkdir -p "$out/share/omarchy" "$out/bin" "$out/share/applications" "$out/share/icons/hicolor/256x256/apps" $out/share/fonts/truetype \
       && cp -r applications bin shell config default themes icon.png icon.txt logo.svg logo.txt "$out/share/omarchy/" \
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
-      
+
+    # Browser theme scripts source these helpers through OMARCHY_PATH.
+    install -d "$out/share/omarchy/install/helpers"
+    cp install/helpers/browser-policy.sh install/helpers/as-root.sh \
+      "$out/share/omarchy/install/helpers/"
+
+    substituteInPlace "bin/omarchy-theme-set-browser" \
+      --replace-fail \
+      'source "$OMARCHY_PATH/install/helpers/browser-policy.sh"' \
+      "source \"$out/share/omarchy/install/helpers/browser-policy.sh\""
+
+    substituteInPlace "bin/omarchy-theme-set-browser-policy" \
+      --replace-fail \
+      'PACKAGED_PATH=/usr/bin/omarchy-theme-set-browser-policy' \
+      "PACKAGED_PATH=$out/bin/omarchy-theme-set-browser-policy"
+
     ${lib.optionalString (!enableMenu) ''
       rm -rf "$out/share/omarchy/shell/plugins/menu"
     ''}
@@ -187,7 +202,7 @@ mkdir -p "$branding_dir"'
           --set OMARCHY_PATH "$out/share/omarchy" \
           --prefix PATH : "${lib.makeBinPath attrs.runtimeInputs}" \
           --prefix XDG_DATA_DIRS : "${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}" \
-          --run '[ -d /etc/omarchy ] && export OMARCHY_PATH=/etc/omarchy'
+          --run '[ -f /etc/omarchy/install/helpers/browser-policy.sh ] && export OMARCHY_PATH=/etc/omarchy'
       fi
     done
 
