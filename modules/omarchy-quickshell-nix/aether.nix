@@ -13,13 +13,13 @@
 }:
 
 let
-  version = "4.29.8";
+  version = "4.29.9";
 
   src = fetchFromGitHub {
     owner = "omacom";
     repo = "aether";
     tag = "v${version}";
-    hash = "sha256-gB6vRNoo309eAWhAhDFDiIzHjSBalKpOjafnx8wzZP0=";
+    hash = "sha256-7OkZ+V01sYgDhurfG7lgP05mFOVFCFPDXDFOrSHpBL0=";
   };
 
   frontend = stdenv.mkDerivation {
@@ -62,10 +62,13 @@ buildGoModule {
   pname = "aether";
   inherit version src;
 
-  vendorHash = "sha256-0cNNFCI/hFYM/BmuHEDDunKf7byj8JCb0lRElsWWaT0=";
+  vendorHash = "sha256-i8Tr4zKm+LaaZ/zKA8yoZC5mv2s4DUqaeT7Iq0uB+ME=";
 
   # Wails uses the production tag to compile the real desktop runtime.
-  tags = [ "production" "webkit2_41" ];
+  tags = [
+    "production"
+    "webkit2_41"
+  ];
   ldflags = [ "-X aether/cli.Version=${version}" ];
   subPackages = [ "." ];
 
