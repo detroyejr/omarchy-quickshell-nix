@@ -239,7 +239,7 @@ in
 
   };
 
-  config = {
+  config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [
       (final: _prev: {
         aether = final.callPackage ./aether.nix { };
@@ -266,8 +266,7 @@ in
     fonts = {
       enableDefaultPackages = true;
       packages = lib.mkBefore [
-        pkgs.nerd-fonts.iosevka
-        finalPackage
+        pkgs.nerd-fonts.iosevka finalPackage
       ];
 
       fontDir.enable = true;
