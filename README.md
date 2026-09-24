@@ -36,3 +36,9 @@ Flake NixOS example:
   };
 }
 ```
+
+To hide an app from the launcher, configure its desktop-entry ID explicitly:
+
+```nix
+programs.omarchy-quickshell.launcher.hiddenEntries = [ "Discord" ];
+```

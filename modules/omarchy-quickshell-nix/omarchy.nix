@@ -23,6 +23,7 @@
   enableBackground ? false,
   extraPlugins ? [ ],
   shellConfig ? "",
+  launcherHiddenEntries ? [ ],
 }:
 
 let
@@ -36,6 +37,9 @@ let
   };
 
   shellConfigFile = writeText "shell.json" "${shellConfig}\n";
+  launcherHiddenEntriesFile = writeText "launcher.hides" (
+    lib.concatStringsSep "\n" launcherHiddenEntries + "\n"
+  );
   webAppsInstallPhase = import ./webapps.nix { inherit lib; };
 
 in
@@ -185,6 +189,8 @@ mkdir -p "$branding_dir"'
       install -Dm644 ${shellConfigFile} \
         "$out/share/omarchy/config/omarchy/shell.json"
     ''}
+
+    cat ${launcherHiddenEntriesFile} >> "$out/share/omarchy/default/omarchy/launcher.hides"
 
     ${lib.concatMapStringsSep "\n" (plugin: ''
       install -d "$out/share/omarchy/shell/plugins/${plugin.omarchyPlugin.name}"

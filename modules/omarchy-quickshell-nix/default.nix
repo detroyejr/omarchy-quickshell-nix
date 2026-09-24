@@ -59,6 +59,7 @@ let
     shellConfig = builtins.toJSON cfg.settings;
     enableMenu = cfg.menu.enable;
     enableBackground = cfg.background.enable;
+    launcherHiddenEntries = cfg.launcher.hiddenEntries;
   };
 
 in
@@ -78,6 +79,16 @@ in
 
     menu.enable = lib.mkEnableOption "enable the menu system for omarchy";
     background.enable = lib.mkEnableOption "enable omarchy's themeing system";
+
+    launcher.hiddenEntries = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      example = [ "Discord" ];
+      description = ''
+        Desktop-entry IDs to hide from the launcher by default. IDs are the
+        desktop file name without the `.desktop` suffix.
+      '';
+    };
 
     plugins = lib.mkOption {
       type = lib.types.listOf (lib.types.either pluginPackageType pluginType);
