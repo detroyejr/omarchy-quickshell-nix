@@ -27,13 +27,13 @@
 }:
 
 let
-  version = "4.0.4";
+  version = "4.0.5";
 
   src = fetchFromGitHub {
     owner = "omacom";
     repo = "omarchy";
-    rev = "c668141e9c42b13c80c9ca4ea108e11708c5e8a5";
-    hash = "sha256-nstxM+CP6al2I4N1LAKdYBvJ4tytD1m8jssiCD7PXTY=";
+    rev = "94a8fbc2d67eec5673c7f16b8c5e8a9c8452ffdc";
+    hash = "sha256-W3XN79yX6v2q6OhITQoRH0pQyx2xN0U9o5MMWdulryo=";
   };
 
   shellConfigFile = writeText "shell.json" "${shellConfig}\n";
