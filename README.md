@@ -42,3 +42,26 @@ To hide an app from the launcher, configure its desktop-entry ID explicitly:
 ```nix
 programs.omarchy-quickshell.launcher.hiddenEntries = [ "Discord" ];
 ```
+
+### Voxtype dictation
+
+Enable Voxtype to install its CLI and start its daemon with the graphical
+session:
+
+```nix
+programs.omarchy-quickshell = {
+  enable = true;
+  voxtype.enable = true;
+};
+```
+
+After switching to the new system, download the default Whisper model once:
+
+```bash
+voxtype setup --download
+```
+
+The daemon starts automatically at graphical-session login. To start it now,
+run `systemctl --user restart voxtype.service`; check it with
+`systemctl --user status voxtype.service`. Voxtype uses its built-in defaults
+unless you create `~/.config/voxtype/config.toml`.

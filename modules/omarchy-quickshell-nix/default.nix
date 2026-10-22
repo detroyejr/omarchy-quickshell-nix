@@ -80,6 +80,17 @@ in
     menu.enable = lib.mkEnableOption "enable the menu system for omarchy";
     background.enable = lib.mkEnableOption "enable omarchy's themeing system";
 
+    voxtype = {
+      enable = lib.mkEnableOption "Voxtype dictation support";
+
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = pkgs.voxtype;
+        defaultText = lib.literalExpression "pkgs.voxtype";
+        description = "Voxtype package used by the dictation daemon and CLI.";
+      };
+    };
+
     launcher.hiddenEntries = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -272,12 +283,31 @@ in
       pkgs.quickshell
       pkgs.chromium
       pkgs.ttfx
-    ];
+    ]
+    ++ lib.optional cfg.voxtype.enable cfg.voxtype.package;
+
+    systemd.user.services.voxtype = lib.mkIf cfg.voxtype.enable {
+      description = "Voxtype dictation daemon";
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      after = [
+        "graphical-session.target"
+        "pipewire.service"
+        "pipewire-pulse.service"
+      ];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${cfg.voxtype.package}/bin/voxtype -q daemon";
+        Restart = "on-failure";
+        RestartSec = 5;
+      };
+    };
 
     fonts = {
       enableDefaultPackages = true;
       packages = lib.mkBefore [
-        pkgs.nerd-fonts.iosevka finalPackage
+        pkgs.nerd-fonts.iosevka
+        finalPackage
       ];
 
       fontDir.enable = true;
