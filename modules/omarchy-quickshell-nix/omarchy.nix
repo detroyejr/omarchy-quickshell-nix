@@ -13,7 +13,11 @@
   jq,
   flock,
   chromium,
+  ffmpeg,
+  gpu-screen-recorder,
   libxkbcommon,
+  mpv,
+  slurp,
   gsettings-desktop-schemas,
   glib,
   xdg-utils,
@@ -55,13 +59,17 @@ stdenv.mkDerivation (attrs: {
 
   runtimeInputs = [
     flock
+    ffmpeg
     glib
     gsettings-desktop-schemas
+    gpu-screen-recorder
     gtk3
     gum
     imagemagick
     jq
     libxkbcommon
+    mpv
+    slurp
     socat
     ttfx
     xdg-terminal-exec
