@@ -11,6 +11,7 @@
   gtk3,
   socat,
   jq,
+  lua,
   flock,
   chromium,
   ffmpeg,
@@ -68,6 +69,7 @@ stdenv.mkDerivation (attrs: {
     imagemagick
     jq
     libxkbcommon
+    lua
     mpv
     slurp
     socat
@@ -179,6 +181,10 @@ mkdir -p "$branding_dir"'
     sed -i '45,56d' "bin/omarchy-default-agent"
 
     cp "bin/omarchy-default-agent" "$out/share/omarchy/bin/omarchy-default-agent"
+
+    # Invalidate cached keybinding rows when the Lua parser dependency changes.
+    substituteInPlace "bin/omarchy-menu-keybindings" \
+      --replace-fail "v11" "v12"
 
     find bin \
       -type f \
