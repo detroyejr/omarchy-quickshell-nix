@@ -186,6 +186,20 @@ mkdir -p "$branding_dir"'
     substituteInPlace "bin/omarchy-menu-keybindings" \
       --replace-fail "v11" "v12"
 
+    substituteInPlace "bin/omarchy-menu-keybindings" \
+      --replace-fail \
+      'local config = os.getenv("HOME") .. "/.config/hypr/hyprland.lua"' \
+      'local config_home = os.getenv("XDG_CONFIG_HOME")
+if not config_home or config_home == "" then
+  config_home = (os.getenv("HOME") or "") .. "/.config"
+end
+local config = config_home .. "/hypr/hyprland.lua"'
+
+    substituteInPlace "bin/omarchy-menu-tmux-keybindings" \
+      --replace-fail \
+      'config_file="''${TMUX_CONF:-$HOME/.config/tmux/tmux.conf}"' \
+      'config_file="''${TMUX_CONF:-''${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf}"'
+
     find bin \
       -type f \
       -name "omarchy-*" \
