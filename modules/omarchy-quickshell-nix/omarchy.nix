@@ -9,6 +9,7 @@
   gum,
   python3,
   gtk3,
+  procps,
   socat,
   jq,
   lua,
@@ -73,6 +74,7 @@ stdenv.mkDerivation (attrs: {
     libxkbcommon
     lua
     mpv
+    procps
     slurp
     socat
     ttfx
@@ -87,6 +89,24 @@ stdenv.mkDerivation (attrs: {
     mkdir -p "$out/share/omarchy" "$out/bin" "$out/share/applications" "$out/share/icons/hicolor/256x256/apps" $out/share/fonts/truetype \
       && cp -r applications bin shell config default themes icon.png icon.txt logo.svg logo.txt "$out/share/omarchy/" \
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
+
+    substituteInPlace "$out/share/omarchy/shell/plugins/bar/indicators/ScreenRecording.qml" \
+      --replace-fail \
+      '["pgrep", "--quiet", "-f", "^gpu-screen-recorder"]' \
+      '["${lib.getBin procps}/bin/pgrep", "--quiet", "-f", "(^|/)gpu-screen-recorder([[:space:]]|$)"]'
+
+    substituteInPlace \
+      "bin/omarchy-capture-screenrecording" \
+      "$out/share/omarchy/bin/omarchy-capture-screenrecording" \
+      --replace-fail \
+      '"^gpu-screen-recorder"' \
+      '"(^|/)gpu-screen-recorder([[:space:]]|$)"'
+
+    find bin "$out/share/omarchy" -type f -print0 \
+      | xargs -0 grep -IlZ -E '(^|[^[:alnum:]_./-])(pgrep|pkill)[[:space:]]' \
+      | xargs -0 -r sed -i -E \
+        -e 's@(^|[^[:alnum:]_./-])pgrep([[:space:]])@\1${lib.getBin procps}/bin/pgrep\2@g' \
+        -e 's@(^|[^[:alnum:]_./-])pkill([[:space:]])@\1${lib.getBin procps}/bin/pkill\2@g'
 
     # Browser theme scripts source these helpers through OMARCHY_PATH.
     install -d "$out/share/omarchy/install/helpers"
