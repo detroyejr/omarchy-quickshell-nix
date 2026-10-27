@@ -23,6 +23,7 @@
   glib,
   xdg-utils,
   ttfx,
+  uwsm,
   writeText,
   enableMenu ? false,
   enableBackground ? false,
@@ -59,11 +60,12 @@ stdenv.mkDerivation (attrs: {
   ];
 
   runtimeInputs = [
-    flock
+    chromium
     ffmpeg
+    flock
     glib
-    gsettings-desktop-schemas
     gpu-screen-recorder
+    gsettings-desktop-schemas
     gtk3
     gum
     imagemagick
@@ -74,9 +76,9 @@ stdenv.mkDerivation (attrs: {
     slurp
     socat
     ttfx
+    uwsm
     xdg-terminal-exec
     xdg-utils
-    chromium
   ];
 
   installPhase = ''
@@ -209,6 +211,13 @@ local config = config_home .. "/hypr/hyprland.lua"'
       -name "omarchy-*" \
       -exec sed -Ei 's,\~\/.config,''${XDG_CONFIG_HOME-~/.config},' "{}" \; \
       && cp -r bin/* "$out/bin/"
+
+    # The wrapped omarchy-restart-gum uses exec, so it cannot be sourced by
+    # the floating-terminal launcher. Source the original helper instead.
+    substituteInPlace "$out/bin/omarchy-launch-floating-terminal-with-presentation" \
+      --replace-fail \
+      "source $out/bin/omarchy-restart-gum" \
+      "source $out/share/omarchy/bin/omarchy-restart-gum"
 
     substituteInPlace "$out/bin/omarchy-launch-shell" \
       --replace-fail "quickshell" "${quickshell}/bin/qs"
