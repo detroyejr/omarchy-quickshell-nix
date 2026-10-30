@@ -69,8 +69,14 @@ in
 
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.callPackage ./omarchy.nix { };
-      defaultText = lib.literalExpression "pkgs.callPackage ./omarchy.nix { }";
+      default = pkgs.callPackage ./omarchy.nix {
+        screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
+      };
+      defaultText = lib.literalExpression ''
+        pkgs.callPackage ./omarchy.nix {
+          screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
+        }
+      '';
       description = ''
         Base Omarchy shell package. It must support `override` with the
         `extraPlugins` and `shellConfig` arguments.
@@ -265,7 +271,10 @@ in
     nixpkgs.overlays = [
       (final: _prev: {
         aether = final.callPackage ./aether.nix { };
-        omarchy-quickshell = final.callPackage ./omarchy.nix { };
+        omarchy-screensaver = final.callPackage ./omarchy-screensaver.nix { };
+        omarchy-quickshell = final.callPackage ./omarchy.nix {
+          screensaverPackage = final.omarchy-screensaver;
+        };
         omarchyPlugins = import ../../pkgs {
           inherit (final) lib;
           pkgs = final;

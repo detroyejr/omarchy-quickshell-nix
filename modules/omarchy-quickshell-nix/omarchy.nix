@@ -26,6 +26,7 @@
   ttfx,
   uwsm,
   writeText,
+  screensaverPackage,
   enableMenu ? false,
   enableBackground ? false,
   extraPlugins ? [ ],
@@ -34,13 +35,13 @@
 }:
 
 let
-  version = "4.0.6";
+  version = "4.0.0.alpha";
 
   src = fetchFromGitHub {
     owner = "omacom";
     repo = "omarchy";
-    rev = "237f1b4071a0bff2296c6d740ba2b9fd695ebfa0";
-    hash = "sha256-H2B/Yfc204C01PIweNAqdGLD+B5i/34gN0I9zUpzmsA=";
+    rev = "0c29fa52d6a681cd18399c0eeb107d55dd1d8de2";
+    hash = "sha256-S/W1kMDtNiuQTZNqCjNfgp2jA4A+t/4Z+3UoP00kdAA=";
   };
 
   shellConfigFile = writeText "shell.json" "${shellConfig}\n";
@@ -75,6 +76,7 @@ stdenv.mkDerivation (attrs: {
     lua
     mpv
     procps
+    screensaverPackage
     slurp
     socat
     ttfx
@@ -90,17 +92,12 @@ stdenv.mkDerivation (attrs: {
       && cp -r applications bin shell config default themes icon.png icon.txt logo.svg logo.txt "$out/share/omarchy/" \
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
 
-    substituteInPlace "$out/share/omarchy/shell/plugins/bar/indicators/ScreenRecording.qml" \
-      --replace-fail \
-      '["pgrep", "--quiet", "-f", "^gpu-screen-recorder"]' \
-      '["${lib.getBin procps}/bin/pgrep", "--quiet", "-f", "(^|/)gpu-screen-recorder([[:space:]]|$)"]'
-
     substituteInPlace \
-      "bin/omarchy-capture-screenrecording" \
-      "$out/share/omarchy/bin/omarchy-capture-screenrecording" \
+      "bin/omarchy-launch-screensaver" \
+      "$out/share/omarchy/bin/omarchy-launch-screensaver" \
       --replace-fail \
-      '"^gpu-screen-recorder"' \
-      '"(^|/)gpu-screen-recorder([[:space:]]|$)"'
+      "/usr/lib/omarchy-screensaver/omarchy-screensaver" \
+      "${screensaverPackage}/lib/omarchy-screensaver/omarchy-screensaver"
 
     find bin "$out/share/omarchy" -type f -print0 \
       | xargs -0 grep -IlZ -E '(^|[^[:alnum:]_./-])(pgrep|pkill)[[:space:]]' \
@@ -142,13 +139,6 @@ stdenv.mkDerivation (attrs: {
       "#!/usr/bin/python3" \
       "#!${lib.getBin python3}/bin/python3"
 
-    substituteInPlace "bin/omarchy-screensaver" \
-      --replace-fail \
-      '  ttfx -i ~/.config/omarchy/branding/screensaver.txt \' \
-      '  screensaver_asset="$HOME/.config/omarchy/branding/screensaver.txt"
-  [[ -f "$screensaver_asset" ]] || screensaver_asset="$OMARCHY_PATH/logo.txt"
-  ttfx -i "$screensaver_asset" \'
-
     substituteInPlace "bin/omarchy-branding-screensaver" \
       --replace-fail \
       'set -euo pipefail' \
@@ -174,20 +164,7 @@ mkdir -p "$branding_dir"'
       "xdg-terminal-exec" \
       "${lib.getBin xdg-terminal-exec}/bin/xdg-terminal-exec"
 
-    substituteInPlace "bin/omarchy-launch-screensaver" \
-      --replace-fail \
-      'exec {events}< <(socat -U - "UNIX-CONNECT:$SOCKET")' \
-      'exec {events}< <(socat -U - "UNIX-CONNECT:$SOCKET" 2>/dev/null)'
-
-    substituteInPlace "bin/omarchy-launch-screensaver" \
-      --replace-fail \
-      "xdg-terminal-exec" \
-      "${lib.getBin xdg-terminal-exec}/bin/xdg-terminal-exec"
-
     substituteInPlace "bin/omarchy-launch-webapp" \
-      --replace-fail \
-      "\$(sed -n 's/^Exec=\\([^ ]*\\).*/\\1/p' {~/.local,~/.nix-profile,/usr}/share/applications/\$browser 2>/dev/null | head -1)" \
-      "\$(sed -n 's/^Exec=\\([^ ]*\\).*/\\1/p' {~/.local,~/.nix-profile,/usr,/run/current-system/sw}/share/applications/\$browser 2>/dev/null | head -1)" \
       --replace-fail \
       'browser="chromium.desktop"' \
       'browser="chromium-browser.desktop"'
@@ -199,14 +176,11 @@ mkdir -p "$branding_dir"'
       "${lib.getBin gtk3}/bin/gtk-launch"
 
 
-    # NOTE: Drop mise install instructions.
-    sed -i '45,56d' "bin/omarchy-default-agent"
-
     cp "bin/omarchy-default-agent" "$out/share/omarchy/bin/omarchy-default-agent"
 
     # Invalidate cached keybinding rows when the Lua parser dependency changes.
     substituteInPlace "bin/omarchy-menu-keybindings" \
-      --replace-fail "v11" "v12"
+      --replace-fail "v19" "v20"
 
     substituteInPlace "bin/omarchy-menu-keybindings" \
       --replace-fail \

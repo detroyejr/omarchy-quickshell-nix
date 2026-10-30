@@ -25,7 +25,12 @@
             overlays = [
               (final: _prev: {
                 aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
-                omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix { };
+                omarchy-screensaver =
+                  final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
+                    { };
+                omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
+                  screensaverPackage = final.omarchy-screensaver;
+                };
                 omarchyPlugins = import ./pkgs {
                   inherit (final) lib;
                   pkgs = final;
@@ -37,7 +42,7 @@
           omarchy-quickshell = pkgs.omarchy-quickshell;
         in
         {
-          inherit (pkgs) aether;
+          inherit (pkgs) aether omarchy-screensaver;
           inherit (pkgs) ttfx;
           inherit omarchy-quickshell;
           default = omarchy-quickshell;
@@ -55,7 +60,12 @@
       overlays.default = (
         final: _prev: {
           aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
-          omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix { };
+          omarchy-screensaver =
+            final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
+              { };
+          omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
+            screensaverPackage = final.omarchy-screensaver;
+          };
           omarchyPlugins = import ./pkgs {
             inherit (final) lib;
             pkgs = final;
@@ -72,7 +82,12 @@
             overlays = [
               (final: _prev: {
                 aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
-                omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix { };
+                omarchy-screensaver =
+                  final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
+                    { };
+                omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
+                  screensaverPackage = final.omarchy-screensaver;
+                };
                 omarchyPlugins = import ./pkgs {
                   inherit (final) lib;
                   pkgs = final;
