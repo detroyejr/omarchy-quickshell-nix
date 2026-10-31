@@ -28,7 +28,9 @@
                 omarchy-screensaver =
                   final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
                     { };
+                omasnap = final.callPackage ./modules/omarchy-quickshell-nix/omasnap.nix { };
                 omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
+                  inherit (final) omasnap;
                   screensaverPackage = final.omarchy-screensaver;
                 };
                 omarchyPlugins = import ./pkgs {
@@ -42,7 +44,7 @@
           omarchy-quickshell = pkgs.omarchy-quickshell;
         in
         {
-          inherit (pkgs) aether omarchy-screensaver;
+          inherit (pkgs) aether omarchy-screensaver omasnap;
           inherit (pkgs) ttfx;
           inherit omarchy-quickshell;
           default = omarchy-quickshell;
@@ -63,7 +65,9 @@
           omarchy-screensaver =
             final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
               { };
+          omasnap = final.callPackage ./modules/omarchy-quickshell-nix/omasnap.nix { };
           omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
+            inherit (final) omasnap;
             screensaverPackage = final.omarchy-screensaver;
           };
           omarchyPlugins = import ./pkgs {
@@ -85,7 +89,9 @@
                 omarchy-screensaver =
                   final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
                     { };
+                omasnap = final.callPackage ./modules/omarchy-quickshell-nix/omasnap.nix { };
                 omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
+                  inherit (final) omasnap;
                   screensaverPackage = final.omarchy-screensaver;
                 };
                 omarchyPlugins = import ./pkgs {

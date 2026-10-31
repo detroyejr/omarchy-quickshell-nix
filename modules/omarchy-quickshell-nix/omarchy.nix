@@ -27,6 +27,7 @@
   uwsm,
   writeText,
   screensaverPackage,
+  omasnap,
   enableMenu ? false,
   enableBackground ? false,
   extraPlugins ? [ ],
@@ -75,6 +76,7 @@ stdenv.mkDerivation (attrs: {
     libxkbcommon
     lua
     mpv
+    omasnap
     procps
     screensaverPackage
     slurp

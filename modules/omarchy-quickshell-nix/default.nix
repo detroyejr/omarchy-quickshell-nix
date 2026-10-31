@@ -70,10 +70,12 @@ in
     package = lib.mkOption {
       type = lib.types.package;
       default = pkgs.callPackage ./omarchy.nix {
+        omasnap = pkgs.callPackage ./omasnap.nix { };
         screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
       };
       defaultText = lib.literalExpression ''
         pkgs.callPackage ./omarchy.nix {
+          omasnap = pkgs.callPackage ./omasnap.nix { };
           screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
         }
       '';
@@ -272,7 +274,9 @@ in
       (final: _prev: {
         aether = final.callPackage ./aether.nix { };
         omarchy-screensaver = final.callPackage ./omarchy-screensaver.nix { };
+        omasnap = final.callPackage ./omasnap.nix { };
         omarchy-quickshell = final.callPackage ./omarchy.nix {
+          inherit (final) omasnap;
           screensaverPackage = final.omarchy-screensaver;
         };
         omarchyPlugins = import ../../pkgs {
