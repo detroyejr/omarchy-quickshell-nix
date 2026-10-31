@@ -41,8 +41,8 @@ let
   src = fetchFromGitHub {
     owner = "omacom";
     repo = "omarchy";
-    rev = "0c29fa52d6a681cd18399c0eeb107d55dd1d8de2";
-    hash = "sha256-S/W1kMDtNiuQTZNqCjNfgp2jA4A+t/4Z+3UoP00kdAA=";
+    rev = "832027859fc297380b87e2e18f086adfb3da58c6";
+    hash = "sha256-uTK4L8I7jF5KTqpKovlC/FyvddTVix66hcg1RW8wlcY=";
   };
 
   shellConfigFile = writeText "shell.json" "${shellConfig}\n";
