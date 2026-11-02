@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   makeWrapper,
+  coreutils,
   quickshell,
   xdg-terminal-exec,
   imagemagick,
@@ -36,13 +37,13 @@
 }:
 
 let
-  version = "4.0.0.alpha";
+  version = "4.5.0-rc3";
 
   src = fetchFromGitHub {
     owner = "omacom";
     repo = "omarchy";
-    rev = "832027859fc297380b87e2e18f086adfb3da58c6";
-    hash = "sha256-uTK4L8I7jF5KTqpKovlC/FyvddTVix66hcg1RW8wlcY=";
+    rev = "8d19ad75ace59af8b6ded52f8b2bec1b15adda7c";
+    hash = "sha256-qZQhH8r4YNLXmyeE3RS3bhgSFQNhJo6MW0cdvCvYvX8=";
   };
 
   shellConfigFile = writeText "shell.json" "${shellConfig}\n";
@@ -63,6 +64,7 @@ stdenv.mkDerivation (attrs: {
   ];
 
   runtimeInputs = [
+    coreutils
     chromium
     ffmpeg
     flock
@@ -95,11 +97,11 @@ stdenv.mkDerivation (attrs: {
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
 
     substituteInPlace \
-      "bin/omarchy-launch-screensaver" \
-      "$out/share/omarchy/bin/omarchy-launch-screensaver" \
+      "default/hypr/bindings/tiling.lua" \
+      "$out/share/omarchy/default/hypr/bindings/tiling.lua" \
       --replace-fail \
-      "/usr/lib/omarchy-screensaver/omarchy-screensaver" \
-      "${screensaverPackage}/lib/omarchy-screensaver/omarchy-screensaver"
+      'o.bind("SUPER + L", "Cycle workspace layout", "omarchy-hyprland-workspace-layout-toggle")' \
+      'o.bind("SUPER + SHIFT + L", "Cycle workspace layout", "omarchy-hyprland-workspace-layout-toggle")'
 
     find bin "$out/share/omarchy" -type f -print0 \
       | xargs -0 grep -IlZ -E '(^|[^[:alnum:]_./-])(pgrep|pkill)[[:space:]]' \
@@ -156,6 +158,18 @@ mkdir -p "$branding_dir"'
       '~/.config/omarchy/branding/screensaver.txt' \
       '"$screensaver_asset"'
 
+    for script in \
+      "bin/omarchy-sudo-passwordless" \
+      "bin/omarchy-security-functions" \
+      "$out/share/omarchy/bin/omarchy-sudo-passwordless" \
+      "$out/share/omarchy/bin/omarchy-security-functions"; do
+      if [[ -f "$script" ]] && grep -qF "/usr/bin/readlink" "$script"; then
+        substituteInPlace "$script" \
+          --replace-fail \
+          "/usr/bin/readlink" \
+          "${lib.getBin coreutils}/bin/readlink"
+      fi
+    done
 
     substituteInPlace \
       "bin/omarchy-launch-terminal" \
