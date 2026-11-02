@@ -96,12 +96,40 @@ stdenv.mkDerivation (attrs: {
       && cp -r applications bin shell config default themes icon.png icon.txt logo.svg logo.txt "$out/share/omarchy/" \
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
 
+    # These scripts source the shared helper, so bypass its executable wrapper.
     substituteInPlace \
-      "default/hypr/bindings/tiling.lua" \
-      "$out/share/omarchy/default/hypr/bindings/tiling.lua" \
+      "bin/omarchy-bar" \
+      "bin/omarchy-dock" \
+      "$out/share/omarchy/bin/omarchy-bar" \
+      "$out/share/omarchy/bin/omarchy-dock" \
       --replace-fail \
-      'o.bind("SUPER + L", "Cycle workspace layout", "omarchy-hyprland-workspace-layout-toggle")' \
-      'o.bind("SUPER + SHIFT + L", "Cycle workspace layout", "omarchy-hyprland-workspace-layout-toggle")'
+      "source omarchy-shell-config" \
+      'source "$OMARCHY_PATH/bin/omarchy-shell-config"'
+
+    substituteInPlace \
+      "bin/omarchy-launch-about" \
+      "$out/share/omarchy/bin/omarchy-launch-about" \
+      --replace-fail \
+      "source omarchy-branding-about-animation" \
+      'source "$OMARCHY_PATH/bin/omarchy-branding-about-animation"'
+
+    substituteInPlace \
+      "bin/omarchy-pkg-install" \
+      "bin/omarchy-pkg-aur-install" \
+      "$out/share/omarchy/bin/omarchy-pkg-install" \
+      "$out/share/omarchy/bin/omarchy-pkg-aur-install" \
+      --replace-fail \
+      "source omarchy-sudo-keepalive" \
+      'source "$OMARCHY_PATH/bin/omarchy-sudo-keepalive"'
+
+    substituteInPlace \
+      "bin/omarchy-sudo-passwordless" \
+      "bin/omarchy-update-stay-awake" \
+      "$out/share/omarchy/bin/omarchy-sudo-passwordless" \
+      "$out/share/omarchy/bin/omarchy-update-stay-awake" \
+      --replace-fail \
+      'source "''${security_entrypoint%/*}/omarchy-security-functions" || exit 126' \
+      'source "$OMARCHY_PATH/bin/omarchy-security-functions" || exit 126'
 
     find bin "$out/share/omarchy" -type f -print0 \
       | xargs -0 grep -IlZ -E '(^|[^[:alnum:]_./-])(pgrep|pkill)[[:space:]]' \
