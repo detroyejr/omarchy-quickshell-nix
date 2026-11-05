@@ -273,22 +273,29 @@ in
 
   config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [
-      (final: _prev: {
-        aether = final.callPackage ./aether.nix { };
-        omarchy-screensaver = final.callPackage ./omarchy-screensaver.nix { };
-        omasnap = final.callPackage ./omasnap.nix { };
-        omarchy-hyprland-titlebars = final.callPackage ./omarchy-hyprland-titlebars.nix { };
-        omarchy-quickshell = final.callPackage ./omarchy.nix {
-          inherit (final) omasnap;
-          screensaverPackage = final.omarchy-screensaver;
-          titlebarsPackage = final.omarchy-hyprland-titlebars;
-        };
-        omarchyPlugins = import ../../pkgs {
-          inherit (final) lib;
-          pkgs = final;
-        };
-        ttfx = final.callPackage ./ttfx.nix { };
-      })
+      (
+        final: _prev:
+        let
+          apps = import ../../apps { inherit (final) callPackage; };
+        in
+        apps
+        // {
+          aether = final.callPackage ./aether.nix { };
+          omarchy-screensaver = final.callPackage ./omarchy-screensaver.nix { };
+          omasnap = final.callPackage ./omasnap.nix { };
+          omarchy-hyprland-titlebars = final.callPackage ./omarchy-hyprland-titlebars.nix { };
+          omarchy-quickshell = final.callPackage ./omarchy.nix {
+            inherit (final) omasnap;
+            screensaverPackage = final.omarchy-screensaver;
+            titlebarsPackage = final.omarchy-hyprland-titlebars;
+          };
+          omarchyPlugins = import ../../pkgs {
+            inherit (final) lib;
+            pkgs = final;
+          };
+          ttfx = final.callPackage ./ttfx.nix { };
+        }
+      )
     ];
     programs.omarchy-quickshell.finalPackage = finalPackage;
 
@@ -300,7 +307,12 @@ in
       pkgs.quickshell
       pkgs.chromium
       pkgs.ttfx
+      pkgs.hype
+      pkgs.signed
+      pkgs.disktree
+      pkgs.monologue
     ]
+    ++ lib.optional (lib.meta.availableOn pkgs.stdenv.hostPlatform pkgs.gliff) pkgs.gliff
     ++ lib.optional cfg.voxtype.enable cfg.voxtype.package;
 
     systemd.user.services.voxtype = lib.mkIf cfg.voxtype.enable {

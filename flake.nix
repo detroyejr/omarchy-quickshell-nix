@@ -14,6 +14,7 @@
         "aarch64-linux"
       ];
       forEachSystem = lib.genAttrs systems;
+      omarchyAppsOverlay = final: _prev: import ./apps { inherit (final) callPackage; };
 
     in
     {
@@ -23,6 +24,7 @@
           pkgs = import nixpkgs {
             inherit system;
             overlays = [
+              omarchyAppsOverlay
               (final: _prev: {
                 aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
                 omarchy-screensaver =
@@ -53,7 +55,12 @@
             omarchy-screensaver
             omasnap
             omarchy-hyprland-titlebars
+            hype
+            signed
+            disktree
+            monologue
             ;
+          inherit (pkgs) gliff;
           inherit (pkgs) ttfx;
           inherit omarchy-quickshell;
           default = omarchy-quickshell;
@@ -69,7 +76,12 @@
       );
 
       overlays.default = (
-        final: _prev: {
+        final: _prev:
+        let
+          apps = import ./apps { inherit (final) callPackage; };
+        in
+        apps
+        // {
           aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
           omarchy-screensaver =
             final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
@@ -97,6 +109,7 @@
           pkgs = import nixpkgs {
             inherit system;
             overlays = [
+              omarchyAppsOverlay
               (final: _prev: {
                 aether = final.callPackage ./modules/omarchy-quickshell-nix/aether.nix { };
                 omarchy-screensaver =
