@@ -244,16 +244,68 @@ mkdir -p "$branding_dir"'
     cp "bin/omarchy-default-agent" "$out/share/omarchy/bin/omarchy-default-agent"
 
     substituteInPlace \
+      "bin/omarchy-agent" \
+      "$out/share/omarchy/bin/omarchy-agent" \
+      --replace-fail \
+      'agent=$(omarchy-default-agent)' \
+      'agent=$(omarchy-default-agent)
+agent_command=$agent
+[[ $agent == "opencode-mini" ]] && agent_command=opencode' \
+      --replace-fail \
+      'if omarchy-cmd-missing "$agent" &&' \
+      'if omarchy-cmd-missing "$agent_command" &&' \
+      --replace-fail \
+      'opencode)
+  command=(opencode --auto)' \
+      'opencode-mini)
+  command=(opencode mini)
+  [[ -n ''${prompt:-} ]] && command+=(--prompt "$prompt")
+  ;;
+opencode)
+  command=(opencode --auto)' \
+      --replace-fail \
+      'user_install="$HOME/.local/bin/$agent"' \
+      'user_install="$HOME/.local/bin/$agent_command"' \
+      --replace-fail \
+      '[[ $agent != "openclaw" && -f $user_install && -x $user_install ]] &&
+  ! mise_wrapper "$user_install" && ! MISE_OFFLINE=1 mise which "$agent" &>/dev/null' \
+      '[[ $agent_command != "openclaw" && -f $user_install && -x $user_install ]] &&
+  ! mise_wrapper "$user_install" && ! MISE_OFFLINE=1 mise which "$agent_command" &>/dev/null' \
+      --replace-fail \
+      'if [[ ''${command[i]} == "$agent" ]]; then' \
+      'if [[ ''${command[i]} == "$agent_command" ]]; then'
+
+    substituteInPlace \
       "bin/omarchy-default-agent" \
       "$out/share/omarchy/bin/omarchy-default-agent" \
+      --replace-fail \
+      'pi|omp|opencode|ori' \
+      'pi|omp|opencode|opencode-mini|ori' \
+      --replace-fail \
+      'opencode | open-code) agent="opencode"; name="OpenCode" ;;' \
+      'opencode | open-code) agent="opencode"; name="OpenCode" ;;
+opencode-mini) agent="opencode-mini"; name="OpenCode Mini"; agent_package="opencode" ;;' \
+      --replace-fail \
+      'esac
+
+agent_package=''${agent_package:-$agent}' \
+      'esac
+
+agent_command=$agent
+[[ $agent == "opencode-mini" ]] && agent_command=opencode
+
+agent_package=''${agent_package:-$agent}' \
       --replace-fail \
       '  agent_present() { user_install || mise where "$agent_tool" &>/dev/null; }' \
       '  nixpkgs_binary() {
     local binary
-    binary=$(command -v "$agent" 2>/dev/null) || return 1
+    binary=$(command -v "$agent_command" 2>/dev/null) || return 1
     [[ $(readlink -f "$binary" 2>/dev/null) == /nix/store/* ]]
   }
   agent_present() { nixpkgs_binary || user_install || mise where "$agent_tool" &>/dev/null; }' \
+      --replace-fail \
+      '[[ -x $HOME/.local/bin/$agent ]] && ! mise_wrapper "$HOME/.local/bin/$agent"' \
+      '[[ -x $HOME/.local/bin/$agent_command ]] && ! mise_wrapper "$HOME/.local/bin/$agent_command"' \
       --replace-fail \
       '  agent_install() {
     user_install && return' \
