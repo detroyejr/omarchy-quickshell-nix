@@ -193,6 +193,12 @@ in
                 description = "Default center bar section entries.";
               };
 
+              centerEnd = lib.mkOption {
+                type = lib.types.nullOr (lib.types.listOf settingType);
+                default = null;
+                description = "Default center-end bar section entries.";
+              };
+
               right = lib.mkOption {
                 type = lib.types.nullOr (lib.types.listOf settingType);
                 default = null;
@@ -232,6 +238,8 @@ in
             { id = "omarchy.weather"; }
             { id = "omarchy.system-update"; }
           ];
+
+          bar.layout.centerEnd = [ { id = "omarchy.elsewhen"; } ];
 
           bar.layout.right = [
             { id = "omarchy.tray"; }
