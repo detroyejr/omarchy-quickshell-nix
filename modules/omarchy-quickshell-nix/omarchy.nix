@@ -243,6 +243,24 @@ mkdir -p "$branding_dir"'
 
     cp "bin/omarchy-default-agent" "$out/share/omarchy/bin/omarchy-default-agent"
 
+    substituteInPlace \
+      "bin/omarchy-default-agent" \
+      "$out/share/omarchy/bin/omarchy-default-agent" \
+      --replace-fail \
+      '  agent_present() { user_install || mise where "$agent_tool" &>/dev/null; }' \
+      '  nixpkgs_binary() {
+    local binary
+    binary=$(command -v "$agent" 2>/dev/null) || return 1
+    [[ $(readlink -f "$binary" 2>/dev/null) == /nix/store/* ]]
+  }
+  agent_present() { nixpkgs_binary || user_install || mise where "$agent_tool" &>/dev/null; }' \
+      --replace-fail \
+      '  agent_install() {
+    user_install && return' \
+      '  agent_install() {
+    nixpkgs_binary && return
+    user_install && return'
+
     # Invalidate cached keybinding rows when the Lua parser dependency changes.
     substituteInPlace "bin/omarchy-menu-keybindings" \
       --replace-fail "v19" "v20"
