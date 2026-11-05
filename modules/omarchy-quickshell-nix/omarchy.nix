@@ -97,6 +97,21 @@ stdenv.mkDerivation (attrs: {
       && cp -r applications bin shell config default themes icon.png icon.txt logo.svg logo.txt "$out/share/omarchy/" \
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
 
+    substituteInPlace "$out/share/omarchy/shell/plugins/dock/DockWindow.qml" \
+      --replace-fail \
+      'source: window.dock && appSlot.modelData ? window.dock.iconFor(appSlot.modelData) : ""' \
+      'readonly property string requestedIconSource: window.dock && appSlot.modelData ? window.dock.iconFor(appSlot.modelData) : ""
+      readonly property string fallbackIconSource: window.dock && window.dock.appLibrary
+        ? window.dock.appLibrary.iconSource("application-x-executable")
+        : Quickshell.iconPath("application-x-executable", true)
+      property bool useFallbackIcon: false
+      onRequestedIconSourceChanged: useFallbackIcon = false
+      source: useFallbackIcon ? fallbackIconSource : requestedIconSource
+      onStatusChanged: {
+        if ((status === Image.Error || status === Image.Null) && !useFallbackIcon)
+          useFallbackIcon = true
+      }'
+
     substituteInPlace "$out/share/omarchy/default/hypr/workspace-modes.lua" \
       --replace-fail \
       '"/usr/lib/omarchy-hyprland-titlebars/titlebars.so"' \
