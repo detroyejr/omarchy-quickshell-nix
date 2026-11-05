@@ -29,9 +29,13 @@
                   final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
                     { };
                 omasnap = final.callPackage ./modules/omarchy-quickshell-nix/omasnap.nix { };
+                omarchy-hyprland-titlebars =
+                  final.callPackage ./modules/omarchy-quickshell-nix/omarchy-hyprland-titlebars.nix
+                    { };
                 omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
                   inherit (final) omasnap;
                   screensaverPackage = final.omarchy-screensaver;
+                  titlebarsPackage = final.omarchy-hyprland-titlebars;
                 };
                 omarchyPlugins = import ./pkgs {
                   inherit (final) lib;
@@ -44,7 +48,12 @@
           omarchy-quickshell = pkgs.omarchy-quickshell;
         in
         {
-          inherit (pkgs) aether omarchy-screensaver omasnap;
+          inherit (pkgs)
+            aether
+            omarchy-screensaver
+            omasnap
+            omarchy-hyprland-titlebars
+            ;
           inherit (pkgs) ttfx;
           inherit omarchy-quickshell;
           default = omarchy-quickshell;
@@ -66,9 +75,13 @@
             final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
               { };
           omasnap = final.callPackage ./modules/omarchy-quickshell-nix/omasnap.nix { };
+          omarchy-hyprland-titlebars =
+            final.callPackage ./modules/omarchy-quickshell-nix/omarchy-hyprland-titlebars.nix
+              { };
           omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
             inherit (final) omasnap;
             screensaverPackage = final.omarchy-screensaver;
+            titlebarsPackage = final.omarchy-hyprland-titlebars;
           };
           omarchyPlugins = import ./pkgs {
             inherit (final) lib;
@@ -90,9 +103,13 @@
                   final.callPackage ./modules/omarchy-quickshell-nix/omarchy-screensaver.nix
                     { };
                 omasnap = final.callPackage ./modules/omarchy-quickshell-nix/omasnap.nix { };
+                omarchy-hyprland-titlebars =
+                  final.callPackage ./modules/omarchy-quickshell-nix/omarchy-hyprland-titlebars.nix
+                    { };
                 omarchy-quickshell = final.callPackage ./modules/omarchy-quickshell-nix/omarchy.nix {
                   inherit (final) omasnap;
                   screensaverPackage = final.omarchy-screensaver;
+                  titlebarsPackage = final.omarchy-hyprland-titlebars;
                 };
                 omarchyPlugins = import ./pkgs {
                   inherit (final) lib;

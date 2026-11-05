@@ -72,11 +72,13 @@ in
       default = pkgs.callPackage ./omarchy.nix {
         omasnap = pkgs.callPackage ./omasnap.nix { };
         screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
+        titlebarsPackage = pkgs.callPackage ./omarchy-hyprland-titlebars.nix { };
       };
       defaultText = lib.literalExpression ''
         pkgs.callPackage ./omarchy.nix {
           omasnap = pkgs.callPackage ./omasnap.nix { };
           screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
+          titlebarsPackage = pkgs.callPackage ./omarchy-hyprland-titlebars.nix { };
         }
       '';
       description = ''
@@ -275,9 +277,11 @@ in
         aether = final.callPackage ./aether.nix { };
         omarchy-screensaver = final.callPackage ./omarchy-screensaver.nix { };
         omasnap = final.callPackage ./omasnap.nix { };
+        omarchy-hyprland-titlebars = final.callPackage ./omarchy-hyprland-titlebars.nix { };
         omarchy-quickshell = final.callPackage ./omarchy.nix {
           inherit (final) omasnap;
           screensaverPackage = final.omarchy-screensaver;
+          titlebarsPackage = final.omarchy-hyprland-titlebars;
         };
         omarchyPlugins = import ../../pkgs {
           inherit (final) lib;

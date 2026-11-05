@@ -29,6 +29,7 @@
   writeText,
   screensaverPackage,
   omasnap,
+  titlebarsPackage,
   enableMenu ? false,
   enableBackground ? false,
   extraPlugins ? [ ],
@@ -95,6 +96,11 @@ stdenv.mkDerivation (attrs: {
     mkdir -p "$out/share/omarchy" "$out/bin" "$out/share/applications" "$out/share/icons/hicolor/256x256/apps" $out/share/fonts/truetype \
       && cp -r applications bin shell config default themes icon.png icon.txt logo.svg logo.txt "$out/share/omarchy/" \
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
+
+    substituteInPlace "$out/share/omarchy/default/hypr/workspace-modes.lua" \
+      --replace-fail \
+      '"/usr/lib/omarchy-hyprland-titlebars/titlebars.so"' \
+      '"${titlebarsPackage}/lib/omarchy-hyprland-titlebars/titlebars.so"'
 
     # These scripts source the shared helper, so bypass its executable wrapper.
     substituteInPlace \
