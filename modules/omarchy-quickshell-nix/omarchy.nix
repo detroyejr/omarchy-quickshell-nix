@@ -29,6 +29,7 @@
   writeText,
   screensaverPackage,
   omasnap,
+  folio,
   titlebarsPackage,
   enableMenu ? false,
   enableBackground ? false,
@@ -80,6 +81,7 @@ stdenv.mkDerivation (attrs: {
     lua
     mpv
     omasnap
+    folio
     procps
     screensaverPackage
     slurp
@@ -96,6 +98,62 @@ stdenv.mkDerivation (attrs: {
     mkdir -p "$out/share/omarchy" "$out/bin" "$out/share/applications" "$out/share/icons/hicolor/256x256/apps" $out/share/fonts/truetype \
       && cp -r applications bin shell config default themes icon.png icon.txt logo.svg logo.txt "$out/share/omarchy/" \
       && cp -r $out/share/omarchy/default/fonts/omarchy $out/share/fonts/truetype
+
+    substituteInPlace \
+      "bin/omarchy-launch-nautilus" \
+      "bin/omarchy-launch-nautilus-cwd" \
+      "$out/share/omarchy/bin/omarchy-launch-nautilus" \
+      "$out/share/omarchy/bin/omarchy-launch-nautilus-cwd" \
+      --replace-fail "nautilus --new-window" "folio"
+
+    substituteInPlace \
+      "bin/omarchy-theme-bg-install" \
+      "$out/share/omarchy/bin/omarchy-theme-bg-install" \
+      --replace-fail \
+      'nautilus "$THEME_USER_BACKGROUNDS"' \
+      'folio "$THEME_USER_BACKGROUNDS"'
+
+    substituteInPlace \
+      "bin/omarchy-install-gaming-retroarch" \
+      "$out/share/omarchy/bin/omarchy-install-gaming-retroarch" \
+      --replace-fail \
+      'setsid nautilus "$HOME/Games"' \
+      'setsid folio "$HOME/Games"'
+
+    substituteInPlace "$out/share/omarchy/shell/plugins/panels/dropbox/Service.qml" \
+      --replace-fail \
+      'Quickshell.execDetached(["uwsm-app", "--", "nautilus", "--select", fileUri(String(file.path))])' \
+      'Quickshell.execDetached(["uwsm-app", "--", "folio", String(file.path)])'
+
+    substituteInPlace \
+      "default/applications/mimeapps.list" \
+      "$out/share/omarchy/default/applications/mimeapps.list" \
+      --replace-fail \
+      "inode/directory=org.gnome.Nautilus.desktop" \
+      "inode/directory=folio.desktop"
+
+    substituteInPlace \
+      "config/omarchy/shell.json" \
+      "$out/share/omarchy/config/omarchy/shell.json" \
+      --replace-fail '"org.gnome.Nautilus"' '"folio"'
+
+    substituteInPlace \
+      "default/hypr/apps/system.lua" \
+      "$out/share/omarchy/default/hypr/apps/system.lua" \
+      --replace-fail \
+      'o.window("omacalc", { float = true })' \
+      'o.window("folio-preview", { float = true })
+    o.window("folio-preview", { center = true })
+    o.window("folio-preview", { size = { 1100, 760 } })
+
+    o.window("omacalc", { float = true })'
+
+    substituteInPlace \
+      "default/hypr/windows.lua" \
+      "$out/share/omarchy/default/hypr/windows.lua" \
+      --replace-fail \
+      'Nautilus)' \
+      'Nautilus|folio)'
 
     substituteInPlace "$out/share/omarchy/shell/plugins/dock/DockWindow.qml" \
       --replace-fail \

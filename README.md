@@ -43,6 +43,13 @@ To hide an app from the launcher, configure its desktop-entry ID explicitly:
 programs.omarchy-quickshell.launcher.hiddenEntries = [ "Discord" ];
 ```
 
+### Files (Folio)
+
+The module builds and installs Folio, Omarchy's native file manager, and sets
+it as the default handler for directories. `Super+Shift+F` and the legacy
+Nautilus launcher commands open Folio. PDF previews, video thumbnails, and
+GVfs-backed network browsing need their respective optional packages.
+
 ### Voxtype dictation
 
 Enable Voxtype to install its CLI and start its daemon with the graphical

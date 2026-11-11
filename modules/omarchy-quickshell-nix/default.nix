@@ -71,12 +71,14 @@ in
       type = lib.types.package;
       default = pkgs.callPackage ./omarchy.nix {
         omasnap = pkgs.callPackage ./omasnap.nix { };
+        folio = pkgs.callPackage ../../apps/folio.nix { };
         screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
         titlebarsPackage = pkgs.callPackage ./omarchy-hyprland-titlebars.nix { };
       };
       defaultText = lib.literalExpression ''
         pkgs.callPackage ./omarchy.nix {
           omasnap = pkgs.callPackage ./omasnap.nix { };
+          folio = pkgs.callPackage ../../apps/folio.nix { };
           screensaverPackage = pkgs.callPackage ./omarchy-screensaver.nix { };
           titlebarsPackage = pkgs.callPackage ./omarchy-hyprland-titlebars.nix { };
         }
@@ -308,10 +310,13 @@ in
     programs.omarchy-quickshell.finalPackage = finalPackage;
 
     programs.chromium.enable = true;
+    xdg.mime.defaultApplications."inode/directory" = [ "folio.desktop" ];
 
     environment.systemPackages = [
       pkgs.aether
       cfg.finalPackage
+      pkgs.folio
+      pkgs.hicolor-icon-theme
       pkgs.quickshell
       pkgs.chromium
       pkgs.ttfx

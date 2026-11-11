@@ -59,6 +59,7 @@
             signed
             disktree
             monologue
+            folio
             ;
           inherit (pkgs) gliff;
           inherit (pkgs) ttfx;
