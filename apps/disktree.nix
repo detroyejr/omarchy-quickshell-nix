@@ -1,5 +1,6 @@
 {
   alsa-lib,
+  addDriverRunpath,
   cmake,
   fetchFromGitHub,
   fontconfig,
@@ -10,6 +11,7 @@
   libxcb,
   libxkbcommon,
   llvmPackages,
+  makeWrapper,
   openssl,
   pkg-config,
   rustPlatform,
@@ -41,6 +43,7 @@ rustPlatform.buildRustPackage {
   nativeBuildInputs = [
     cmake
     llvmPackages.libclang
+    makeWrapper
     pkg-config
   ];
 
@@ -84,6 +87,16 @@ rustPlatform.buildRustPackage {
     substituteInPlace "$out/share/applications/disktree.desktop" \
       --replace-fail '@BINDIR@' "$out/bin" \
       --replace-fail '@VERSION@' "${version}"
+
+    wrapProgram "$out/bin/disktree" \
+      --prefix LD_LIBRARY_PATH : "${
+        lib.makeLibraryPath [
+          libGL
+          vulkan-loader
+          wayland
+        ]
+      }:${addDriverRunpath.driverLink}/lib" \
+      --suffix VK_ADD_DRIVER_FILES : "${addDriverRunpath.driverLink}/share/vulkan/icd.d"
 
     runHook postInstall
   '';
